@@ -134,15 +134,15 @@ export const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#6B46C1",
-      light: "#9F7AEA",
-      dark: "#553C9A",
+      main: "#9F7AEA", // Soft purple
+      light: "#E9D8FD", // Light lavender
+      dark: "#6B46C1", // Deep purple
       contrastText: "#FFFFFF",
     },
     secondary: {
-      main: "#B794F4",
-      light: "#D6BCFA",
-      dark: "#9F7AEA",
+      main: "#B794F4", // Medium purple
+      light: "#D6BCFA", // Light purple
+      dark: "#9F7AEA", // Soft purple
       contrastText: "#FFFFFF",
     },
     success: {
@@ -156,12 +156,12 @@ export const lightTheme = createTheme({
       dark: colors.error.dark,
     },
     background: {
-      default: "linear-gradient(135deg, #F3E8FD 0%, #E9D8FD 100%)",
-      paper: "#FFFFFF",
+      default: "linear-gradient(135deg, #F3E8FD 0%, #E9D8FD 50%, #D6BCFA 100%)", // Ombre pastel purple
+      paper: "rgba(255, 255, 255, 0.7)", // Milky white
     },
     text: {
-      primary: "#1E293B",
-      secondary: "#64748B",
+      primary: "#2D3748", // Dark gray for better readability
+      secondary: "#4A5568", // Medium gray for secondary text
     },
   },
   components: {
@@ -171,6 +171,13 @@ export const lightTheme = createTheme({
         root: {
           ...commonStyles.components.MuiCard.styleOverrides.root,
           backgroundColor: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: "0 16px 48px rgba(0, 0, 0, 0.15)",
+            backgroundColor: "rgba(255, 255, 255, 0.98)",
+          },
           "&.gradient-primary": {
             background: colors.primary.gradient,
             color: "#FFFFFF",
@@ -183,6 +190,149 @@ export const lightTheme = createTheme({
             background: colors.accent.gradient,
             color: "#FFFFFF",
           },
+          // Special styling for chart cards
+          "&.chart-card": {
+            background: "rgba(255, 255, 255, 0.95)", // Milky white
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+            "&:hover": {
+              boxShadow: "0 16px 48px rgba(0, 0, 0, 0.18)",
+              backgroundColor: "rgba(255, 255, 255, 0.98)",
+            },
+          },
+          // Special styling for table cards
+          "&.table-card": {
+            background: "rgba(255, 255, 255, 0.95)", // Milky white
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+            "&:hover": {
+              boxShadow: "0 16px 48px rgba(0, 0, 0, 0.18)",
+              backgroundColor: "rgba(255, 255, 255, 0.98)",
+            },
+          },
+          // Special styling for data cards
+          "&.data-card": {
+            background: "rgba(255, 255, 255, 0.95)", // Milky white
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+            "&:hover": {
+              boxShadow: "0 16px 48px rgba(0, 0, 0, 0.18)",
+              backgroundColor: "rgba(255, 255, 255, 0.98)",
+            },
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderColor: "rgba(0, 0, 0, 0.08)",
+          color: "#2D3748",
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          "&:hover": {
+            backgroundColor: "rgba(249, 250, 251, 0.95)", // Light gray with milky effect
+          },
+        },
+        head: {
+          backgroundColor: "rgba(249, 250, 251, 0.75)", // Light gray with milky effect for headers
+          color: "#6B46C1",
+          fontWeight: 600,
+          "&:hover": {
+            backgroundColor: "rgba(243, 244, 246, 0.75)",
+          },
+        },
+      },
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          borderRadius: "16px",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+          padding: "12px",
+          "&:hover": {
+            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.15)",
+            backgroundColor: "rgba(255, 255, 255, 0.98)",
+          },
+        },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          "&:hover": {
+            backgroundColor: "rgba(249, 250, 251, 0.75)", // Light gray with milky effect
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        h1: {
+          background: colors.primary.gradient,
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          fontWeight: 700,
+        },
+        h2: {
+          background: colors.secondary.gradient,
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          fontWeight: 700,
+        },
+        h3: {
+          background: colors.accent.gradient,
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          fontWeight: 700,
+        },
+        body1: {
+          color: "#2D3748",
+        },
+        body2: {
+          color: "#4A5568",
         },
       },
     },

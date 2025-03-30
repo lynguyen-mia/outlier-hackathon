@@ -184,6 +184,12 @@ const Layout: React.FC<LayoutProps> = ({
                     ? "linear-gradient(90deg, rgba(159, 122, 234, 0.2) 0%, rgba(233, 216, 253, 0.2) 100%)"
                     : "linear-gradient(90deg, rgba(107, 70, 193, 0.2) 0%, rgba(159, 122, 234, 0.2) 100%)",
                 transform: "translateX(4px)",
+                "& .MuiListItemIcon-root": {
+                  color: "#FFFFFF",
+                },
+                "& .MuiListItemText-primary": {
+                  color: "#FFFFFF",
+                },
               },
               "&.Mui-selected": {
                 background:
@@ -204,18 +210,36 @@ const Layout: React.FC<LayoutProps> = ({
               sx={{
                 color:
                   location.pathname === item.path
-                    ? theme.palette.mode === "dark"
-                      ? "#1E1B4B"
-                      : "#FFFFFF"
-                    : "inherit",
+                    ? "#FFFFFF"
+                    : theme.palette.mode === "dark"
+                    ? "#E9D8FD"
+                    : "#6B46C1",
                 minWidth: isCollapsed ? "auto" : 40,
                 mr: isCollapsed ? 0 : 2,
+                transition: "all 0.2s ease-in-out",
               }}
             >
               {item.icon}
             </ListItemIcon>
             <Collapse in={!isCollapsed} orientation="horizontal">
-              <ListItemText primary={item.text} />
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{
+                  sx: {
+                    fontWeight: 700,
+                    color:
+                      location.pathname === item.path
+                        ? "#FFFFFF"
+                        : theme.palette.mode === "dark"
+                        ? "#E9D8FD"
+                        : "#6B46C1",
+                    fontSize: "1rem",
+                    letterSpacing: "0.5px",
+                    opacity: 0.95,
+                    transition: "all 0.2s ease-in-out",
+                  },
+                }}
+              />
             </Collapse>
           </ListItem>
         ))}
@@ -309,6 +333,7 @@ const Layout: React.FC<LayoutProps> = ({
             }}
           >
             {menuItems.find((item) => item.path === location.pathname)?.text}
+            {location.pathname === "/" && " (past 30 days)"}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -341,7 +366,7 @@ const Layout: React.FC<LayoutProps> = ({
                 background:
                   theme.palette.mode === "dark"
                     ? "rgba(26, 31, 44, 0.95)"
-                    : "rgba(255, 255, 255, 0.95)",
+                    : "rgba(255, 255, 255, 0.85)",
                 backdropFilter: "blur(10px)",
               },
             }}
@@ -360,7 +385,7 @@ const Layout: React.FC<LayoutProps> = ({
               background:
                 theme.palette.mode === "dark"
                   ? "rgba(26, 31, 44, 0.95)"
-                  : "rgba(255, 255, 255, 0.95)",
+                  : "#d0bfff",
               backdropFilter: "blur(10px)",
               transition: theme.transitions.create("width", {
                 easing: theme.transitions.easing.sharp,
@@ -389,6 +414,28 @@ const Layout: React.FC<LayoutProps> = ({
             duration: theme.transitions.duration.leavingScreen,
           }),
           minHeight: "calc(100vh - 64px)",
+          background:
+            theme.palette.mode === "light"
+              ? "linear-gradient(135deg, #F3E8FD 0%, #E9D8FD 50%, #D6BCFA 100%)"
+              : "linear-gradient(90deg, rgba(49, 46, 129, 0.8) 0%, rgba(30, 27, 75, 0.8) 100%)",
+          position: "relative",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background:
+              theme.palette.mode === "light"
+                ? "radial-gradient(circle at 50% 50%, rgba(233, 216, 253, 0.3) 0%, rgba(214, 188, 250, 0.1) 100%)"
+                : "radial-gradient(circle at 50% 50%, rgba(45, 55, 72, 0.3) 0%, rgba(26, 32, 44, 0.1) 100%)",
+            zIndex: 0,
+          },
+          "& > *": {
+            position: "relative",
+            zIndex: 1,
+          },
         }}
       >
         <Box
@@ -415,12 +462,10 @@ const Layout: React.FC<LayoutProps> = ({
             borderRadius: "16px",
             background: isDarkMode
               ? "linear-gradient(135deg, rgba(49, 46, 129, 0.95) 0%, rgba(30, 27, 75, 0.95) 100%)"
-              : "linear-gradient(135deg, rgba(243, 232, 253, 0.95) 0%, rgba(233, 216, 253, 0.95) 100%)",
+              : "rgba(255, 255, 255, 0.85)",
             backdropFilter: "blur(10px)",
             border: `1px solid ${
-              isDarkMode
-                ? "rgba(233, 216, 253, 0.2)"
-                : "rgba(107, 70, 193, 0.2)"
+              isDarkMode ? "rgba(233, 216, 253, 0.2)" : "rgba(0, 0, 0, 0.1)"
             }`,
             boxShadow: isDarkMode
               ? "0 4px 20px rgba(0, 0, 0, 0.2)"

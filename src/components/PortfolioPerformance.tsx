@@ -138,13 +138,13 @@ const PortfolioPerformance = () => {
         background:
           theme.palette.mode === "dark"
             ? "linear-gradient(135deg, rgba(12, 133, 153, 0.85) 0%, rgba(12, 133, 153, 0.6) 100%)"
-            : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+            : "rgba(255, 255, 255, 0.85)",
         backdropFilter: "blur(10px)",
         borderRadius: "20px",
         boxShadow:
           theme.palette.mode === "dark"
             ? "0 4px 30px rgba(12, 133, 153, 0.2)"
-            : "0 4px 30px rgba(139, 92, 246, 0.1)",
+            : "0 4px 30px rgba(0, 0, 0, 0.1)",
       }}
     >
       <CardContent>

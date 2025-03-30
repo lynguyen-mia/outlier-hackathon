@@ -168,11 +168,95 @@ const newsData = [
   },
 ];
 
+interface Transaction {
+  id: number;
+  date: string;
+  type: "buy" | "sell";
+  symbol: string;
+  name: string;
+  sector: string;
+  shares: number;
+  price: number;
+  value: number;
+  fees: number;
+}
+
 const Overview: React.FC = () => {
   const theme = useTheme();
+  const [isLoading, setIsLoading] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+    endDate: new Date(),
+  });
   const [timeRange, setTimeRange] = useState(0);
   const [viewMode, setViewMode] = useState<"name" | "sector">("name");
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Sample transactions data for the past 30 days
+  const transactions: Transaction[] = [
+    {
+      id: 1,
+      date: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+      type: "buy",
+      symbol: "HPG",
+      name: "Hoa Phat Group",
+      sector: "Materials",
+      shares: 100,
+      price: 25,
+      value: 2500,
+      fees: 10,
+    },
+    {
+      id: 2,
+      date: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+      type: "sell",
+      symbol: "VRE",
+      name: "Vincom Retail",
+      sector: "Real Estate",
+      shares: 50,
+      price: 30,
+      value: 1500,
+      fees: 10,
+    },
+    // Add more sample transactions as needed
+  ];
+
+  // Function to calculate metrics for the past 30 days
+  const calculateMetrics = () => {
+    const filteredTransactions = transactions.filter(
+      (transaction: Transaction) => {
+        const transactionDate = new Date(transaction.date);
+        return (
+          transactionDate >= dateRange.startDate &&
+          transactionDate <= dateRange.endDate
+        );
+      }
+    );
+
+    const totalValue = filteredTransactions.reduce(
+      (sum: number, t: Transaction) => sum + t.value,
+      0
+    );
+    const totalFees = filteredTransactions.reduce(
+      (sum: number, t: Transaction) => sum + t.fees,
+      0
+    );
+    const buyTransactions = filteredTransactions.filter(
+      (t: Transaction) => t.type === "buy"
+    );
+    const sellTransactions = filteredTransactions.filter(
+      (t: Transaction) => t.type === "sell"
+    );
+
+    return {
+      totalValue,
+      totalFees,
+      buyCount: buyTransactions.length,
+      sellCount: sellTransactions.length,
+      averageTransactionValue: totalValue / filteredTransactions.length,
+    };
+  };
+
+  const metrics = calculateMetrics();
 
   React.useEffect(() => {
     // Simulate loading state for smooth transition
@@ -256,22 +340,22 @@ const Overview: React.FC = () => {
                 boxShadow:
                   theme.palette.mode === "dark"
                     ? "0 12px 40px rgba(233, 216, 253, 0.2)"
-                    : "0 12px 40px rgba(107, 70, 193, 0.2)",
+                    : "0 12px 40px rgba(0, 0, 0, 0.15)",
               },
               borderRadius: "20px",
               boxShadow:
                 theme.palette.mode === "dark"
                   ? "0 8px 32px rgba(0, 0, 0, 0.2)"
-                  : "0 8px 32px rgba(107, 70, 193, 0.15)",
+                  : "0 8px 32px rgba(0, 0, 0, 0.1)",
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.9) 0%, rgba(30, 27, 75, 0.9) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.9) 0%, rgba(233, 216, 253, 0.9) 100%)",
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
               border: `1px solid ${
                 theme.palette.mode === "dark"
                   ? "rgba(233, 216, 253, 0.2)"
-                  : "rgba(107, 70, 193, 0.2)"
+                  : "rgba(0, 0, 0, 0.1)"
               }`,
               overflow: "hidden",
               "&::before": {
@@ -285,21 +369,6 @@ const Overview: React.FC = () => {
                   theme.palette.mode === "dark"
                     ? "linear-gradient(90deg, #9F7AEA, #E9D8FD)"
                     : "linear-gradient(90deg, #6B46C1, #9F7AEA)",
-              },
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background:
-                  "linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)",
-                transform: "translateX(-100%)",
-                transition: "transform 0.6s ease-in-out",
-              },
-              "&:hover::after": {
-                transform: "translateX(100%)",
               },
             }}
           >
@@ -346,22 +415,22 @@ const Overview: React.FC = () => {
                 boxShadow:
                   theme.palette.mode === "dark"
                     ? "0 12px 40px rgba(233, 216, 253, 0.2)"
-                    : "0 12px 40px rgba(107, 70, 193, 0.2)",
+                    : "0 12px 40px rgba(0, 0, 0, 0.15)",
               },
               borderRadius: "20px",
               boxShadow:
                 theme.palette.mode === "dark"
                   ? "0 8px 32px rgba(0, 0, 0, 0.2)"
-                  : "0 8px 32px rgba(107, 70, 193, 0.15)",
+                  : "0 8px 32px rgba(0, 0, 0, 0.1)",
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.9) 0%, rgba(30, 27, 75, 0.9) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.9) 0%, rgba(233, 216, 253, 0.9) 100%)",
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
               border: `1px solid ${
                 theme.palette.mode === "dark"
                   ? "rgba(233, 216, 253, 0.2)"
-                  : "rgba(107, 70, 193, 0.2)"
+                  : "rgba(0, 0, 0, 0.1)"
               }`,
               overflow: "hidden",
               "&::before": {
@@ -371,10 +440,7 @@ const Overview: React.FC = () => {
                 left: 0,
                 right: 0,
                 height: "4px",
-                background:
-                  theme.palette.mode === "dark"
-                    ? "linear-gradient(90deg, #9F7AEA, #E9D8FD)"
-                    : "linear-gradient(90deg, #6B46C1, #9F7AEA)",
+                background: "linear-gradient(90deg, #2e7d32, #81C784)",
               },
             }}
           >
@@ -418,22 +484,22 @@ const Overview: React.FC = () => {
                 boxShadow:
                   theme.palette.mode === "dark"
                     ? "0 12px 40px rgba(233, 216, 253, 0.2)"
-                    : "0 12px 40px rgba(107, 70, 193, 0.2)",
+                    : "0 12px 40px rgba(0, 0, 0, 0.15)",
               },
               borderRadius: "20px",
               boxShadow:
                 theme.palette.mode === "dark"
                   ? "0 8px 32px rgba(0, 0, 0, 0.2)"
-                  : "0 8px 32px rgba(107, 70, 193, 0.15)",
+                  : "0 8px 32px rgba(0, 0, 0, 0.1)",
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.9) 0%, rgba(30, 27, 75, 0.9) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.9) 0%, rgba(233, 216, 253, 0.9) 100%)",
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
               border: `1px solid ${
                 theme.palette.mode === "dark"
                   ? "rgba(233, 216, 253, 0.2)"
-                  : "rgba(107, 70, 193, 0.2)"
+                  : "rgba(0, 0, 0, 0.1)"
               }`,
               overflow: "hidden",
               "&::before": {
@@ -443,7 +509,7 @@ const Overview: React.FC = () => {
                 left: 0,
                 right: 0,
                 height: "4px",
-                background: "linear-gradient(90deg, #2e7d32, #81C784)",
+                background: "linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)",
               },
             }}
           >
@@ -467,7 +533,7 @@ const Overview: React.FC = () => {
                   background:
                     theme.palette.mode === "dark"
                       ? "linear-gradient(135deg, #E9D8FD 0%, #9F7AEA 100%)"
-                      : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
+                      : "linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   fontSize: "2rem",
@@ -491,22 +557,22 @@ const Overview: React.FC = () => {
                 boxShadow:
                   theme.palette.mode === "dark"
                     ? "0 12px 40px rgba(233, 216, 253, 0.2)"
-                    : "0 12px 40px rgba(107, 70, 193, 0.2)",
+                    : "0 12px 40px rgba(0, 0, 0, 0.15)",
               },
               borderRadius: "20px",
               boxShadow:
                 theme.palette.mode === "dark"
                   ? "0 8px 32px rgba(0, 0, 0, 0.2)"
-                  : "0 8px 32px rgba(107, 70, 193, 0.15)",
+                  : "0 8px 32px rgba(0, 0, 0, 0.1)",
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.9) 0%, rgba(30, 27, 75, 0.9) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.9) 0%, rgba(233, 216, 253, 0.9) 100%)",
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
               border: `1px solid ${
                 theme.palette.mode === "dark"
                   ? "rgba(233, 216, 253, 0.2)"
-                  : "rgba(107, 70, 193, 0.2)"
+                  : "rgba(0, 0, 0, 0.1)"
               }`,
               overflow: "hidden",
               "&::before": {
@@ -564,7 +630,7 @@ const Overview: React.FC = () => {
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
             }}
           >
@@ -580,7 +646,19 @@ const Overview: React.FC = () => {
                       : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
-                  fontWeight: 600,
+                  fontWeight: 700,
+                  fontSize: "1.5rem",
+                  position: "relative",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: "-8px",
+                    left: 0,
+                    width: "60px",
+                    height: "4px",
+                    background: "linear-gradient(90deg, #FF9800, #FFB74D)",
+                    borderRadius: "2px",
+                  },
                 }}
               >
                 Portfolio Performance
@@ -614,7 +692,7 @@ const Overview: React.FC = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart
                   data={getPerformanceData()}
-                  margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
                 >
                   <defs>
                     <linearGradient
@@ -629,14 +707,14 @@ const Overview: React.FC = () => {
                         stopColor={
                           theme.palette.mode === "dark" ? "#9F7AEA" : "#6B46C1"
                         }
-                        stopOpacity={0.3}
+                        stopOpacity={0.4}
                       />
                       <stop
                         offset="95%"
                         stopColor={
                           theme.palette.mode === "dark" ? "#9F7AEA" : "#6B46C1"
                         }
-                        stopOpacity={0}
+                        stopOpacity={0.1}
                       />
                     </linearGradient>
                     <linearGradient
@@ -649,47 +727,26 @@ const Overview: React.FC = () => {
                       <stop
                         offset="5%"
                         stopColor={
-                          theme.palette.mode === "dark" ? "#99e9f2" : "#B794F4"
+                          theme.palette.mode === "dark" ? "#FF9800" : "#FF9800"
                         }
-                        stopOpacity={0.2}
+                        stopOpacity={0.3}
                       />
                       <stop
                         offset="95%"
                         stopColor={
-                          theme.palette.mode === "dark" ? "#99e9f2" : "#B794F4"
+                          theme.palette.mode === "dark" ? "#FF9800" : "#FF9800"
                         }
-                        stopOpacity={0}
-                      />
-                    </linearGradient>
-                    <linearGradient
-                      id="colorGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="5%"
-                        stopColor={
-                          theme.palette.mode === "dark" ? "#9F7AEA" : "#6B46C1"
-                        }
-                        stopOpacity={0.8}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor={
-                          theme.palette.mode === "dark" ? "#9F7AEA" : "#6B46C1"
-                        }
-                        stopOpacity={0.6}
+                        stopOpacity={0.1}
                       />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke={
-                      theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1"
+                      theme.palette.mode === "dark"
+                        ? "rgba(233, 216, 253, 0.1)"
+                        : "rgba(107, 70, 193, 0.1)"
                     }
-                    opacity={0.2}
                     vertical={false}
                   />
                   <XAxis
@@ -711,6 +768,7 @@ const Overview: React.FC = () => {
                     tick={{
                       fill:
                         theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
+                      fontSize: "0.875rem",
                     }}
                     padding={{ top: 20, bottom: 20 }}
                   />
@@ -726,8 +784,7 @@ const Overview: React.FC = () => {
                         theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
                       boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
                       backdropFilter: "blur(8px)",
-                      padding: "8px 12px",
-                      transition: "all 0.3s ease",
+                      padding: "12px 16px",
                       fontSize: "0.875rem",
                       fontWeight: 500,
                     }}
@@ -751,67 +808,6 @@ const Overview: React.FC = () => {
                       ).toFixed(2);
                       return [formattedValue, `${name} (${percentage}%)`];
                     }}
-                    animationDuration={200}
-                  />
-                  <Legend
-                    verticalAlign="top"
-                    height={36}
-                    content={({ payload }) => (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          gap: 3,
-                          mt: 1,
-                        }}
-                      >
-                        {payload?.map((entry, index) => (
-                          <Box
-                            key={`item-${index}`}
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              cursor: "pointer",
-                              transition: "all 0.2s ease-in-out",
-                              opacity:
-                                entry.value === "Portfolio NAV" ? 1 : 0.7,
-                              "&:hover": {
-                                opacity: 1,
-                                transform: "scale(1.05)",
-                              },
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: "50%",
-                                backgroundColor: entry.color,
-                                border:
-                                  entry.dataKey === "vni"
-                                    ? "1px solid #fff"
-                                    : "none",
-                              }}
-                            />
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color:
-                                  theme.palette.mode === "dark"
-                                    ? "#E9D8FD"
-                                    : "#6B46C1",
-                                fontSize: "0.875rem",
-                              }}
-                            >
-                              {entry.dataKey === "value"
-                                ? "Portfolio NAV"
-                                : "VN-Index"}
-                            </Typography>
-                          </Box>
-                        ))}
-                      </Box>
-                    )}
                   />
                   <Line
                     type="monotone"
@@ -820,7 +816,7 @@ const Overview: React.FC = () => {
                     stroke={
                       theme.palette.mode === "dark" ? "#9F7AEA" : "#6B46C1"
                     }
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                     fill="url(#portfolioGradient)"
                     dot={{
                       fill:
@@ -844,7 +840,7 @@ const Overview: React.FC = () => {
                     dataKey="vni"
                     name="VN-Index"
                     stroke={
-                      theme.palette.mode === "dark" ? "#99e9f2" : "#B794F4"
+                      theme.palette.mode === "dark" ? "#FF9800" : "#FF9800"
                     }
                     strokeDasharray="5 5"
                     strokeWidth={2}
@@ -852,17 +848,17 @@ const Overview: React.FC = () => {
                     dot={{
                       r: 3,
                       fill:
-                        theme.palette.mode === "dark" ? "#99e9f2" : "#B794F4",
+                        theme.palette.mode === "dark" ? "#FF9800" : "#FF9800",
                       stroke:
-                        theme.palette.mode === "dark" ? "#99e9f2" : "#B794F4",
+                        theme.palette.mode === "dark" ? "#FF9800" : "#FF9800",
                       strokeWidth: 1,
                     }}
                     activeDot={{
                       r: 4,
                       fill:
-                        theme.palette.mode === "dark" ? "#99e9f2" : "#B794F4",
+                        theme.palette.mode === "dark" ? "#FF9800" : "#FF9800",
                       stroke:
-                        theme.palette.mode === "dark" ? "#99e9f2" : "#B794F4",
+                        theme.palette.mode === "dark" ? "#FF9800" : "#FF9800",
                       strokeWidth: 1,
                     }}
                   />
@@ -885,7 +881,7 @@ const Overview: React.FC = () => {
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
             }}
           >
@@ -893,11 +889,9 @@ const Overview: React.FC = () => {
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: { xs: "column", sm: "row" },
                   justifyContent: "space-between",
-                  alignItems: { xs: "flex-start", sm: "center" },
-                  mb: 3,
-                  gap: { xs: 2, sm: 0 },
+                  alignItems: "center",
+                  mb: { xs: 2, sm: 3 },
                 }}
               >
                 <Typography
@@ -909,7 +903,19 @@ const Overview: React.FC = () => {
                         : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
-                    fontWeight: 600,
+                    fontWeight: 700,
+                    fontSize: "1.5rem",
+                    position: "relative",
+                    "&::after": {
+                      content: '""',
+                      position: "absolute",
+                      bottom: "-8px",
+                      left: 0,
+                      width: "60px",
+                      height: "4px",
+                      background: "linear-gradient(90deg, #FF9800, #FFB74D)",
+                      borderRadius: "2px",
+                    },
                   }}
                 >
                   Portfolio Distribution
@@ -917,23 +923,46 @@ const Overview: React.FC = () => {
                 <Box
                   sx={{
                     display: "flex",
-                    gap: 1,
-                    flexWrap: "wrap",
+                    gap: 0.5,
+                    background:
+                      theme.palette.mode === "dark"
+                        ? "rgba(233, 216, 253, 0.1)"
+                        : "rgba(107, 70, 193, 0.05)",
+                    borderRadius: "20px",
+                    p: 0.5,
+                    boxShadow:
+                      theme.palette.mode === "dark"
+                        ? "0 4px 12px rgba(233, 216, 253, 0.1)"
+                        : "0 4px 12px rgba(107, 70, 193, 0.1)",
+                    position: "relative",
+                    "&::before": {
+                      content: '""',
+                      position: "absolute",
+                      top: "50%",
+                      left: viewMode === "name" ? "4px" : "calc(50% + 4px)",
+                      transform: "translateY(-50%)",
+                      width: "calc(50% - 4px)",
+                      height: "calc(100% - 8px)",
+                      background:
+                        theme.palette.mode === "dark"
+                          ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
+                          : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
+                      borderRadius: "16px",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      zIndex: 0,
+                    },
                   }}
                 >
                   <Button
-                    variant={viewMode === "name" ? "contained" : "outlined"}
+                    variant="text"
                     onClick={() => setViewMode("name")}
                     size="small"
                     sx={{
-                      borderRadius: "12px",
+                      borderRadius: "16px",
                       textTransform: "none",
-                      background:
-                        viewMode === "name"
-                          ? theme.palette.mode === "dark"
-                            ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
-                            : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)"
-                          : "transparent",
+                      minWidth: "100px",
+                      position: "relative",
+                      zIndex: 1,
                       color:
                         viewMode === "name"
                           ? theme.palette.mode === "dark"
@@ -942,33 +971,32 @@ const Overview: React.FC = () => {
                           : theme.palette.mode === "dark"
                           ? "#E9D8FD"
                           : "#6B46C1",
-                      borderColor:
-                        theme.palette.mode === "dark"
-                          ? "rgba(233, 216, 253, 0.2)"
-                          : "rgba(107, 70, 193, 0.2)",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "&:hover": {
-                        borderColor:
-                          theme.palette.mode === "dark"
-                            ? "rgba(233, 216, 253, 0.3)"
-                            : "rgba(107, 70, 193, 0.3)",
+                        color:
+                          viewMode === "name"
+                            ? theme.palette.mode === "dark"
+                              ? "#1E1B4B"
+                              : "#FFFFFF"
+                            : theme.palette.mode === "dark"
+                            ? "#9F7AEA"
+                            : "#6B46C1",
+                        transform: "translateY(-1px)",
                       },
                     }}
                   >
                     By Name
                   </Button>
                   <Button
-                    variant={viewMode === "sector" ? "contained" : "outlined"}
+                    variant="text"
                     onClick={() => setViewMode("sector")}
                     size="small"
                     sx={{
-                      borderRadius: "12px",
+                      borderRadius: "16px",
                       textTransform: "none",
-                      background:
-                        viewMode === "sector"
-                          ? theme.palette.mode === "dark"
-                            ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
-                            : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)"
-                          : "transparent",
+                      minWidth: "100px",
+                      position: "relative",
+                      zIndex: 1,
                       color:
                         viewMode === "sector"
                           ? theme.palette.mode === "dark"
@@ -977,15 +1005,17 @@ const Overview: React.FC = () => {
                           : theme.palette.mode === "dark"
                           ? "#E9D8FD"
                           : "#6B46C1",
-                      borderColor:
-                        theme.palette.mode === "dark"
-                          ? "rgba(233, 216, 253, 0.2)"
-                          : "rgba(107, 70, 193, 0.2)",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "&:hover": {
-                        borderColor:
-                          theme.palette.mode === "dark"
-                            ? "rgba(233, 216, 253, 0.3)"
-                            : "rgba(107, 70, 193, 0.3)",
+                        color:
+                          viewMode === "sector"
+                            ? theme.palette.mode === "dark"
+                              ? "#1E1B4B"
+                              : "#FFFFFF"
+                            : theme.palette.mode === "dark"
+                            ? "#9F7AEA"
+                            : "#6B46C1",
+                        transform: "translateY(-1px)",
                       },
                     }}
                   >
@@ -993,7 +1023,7 @@ const Overview: React.FC = () => {
                   </Button>
                 </Box>
               </Box>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
                   <Pie
                     data={
@@ -1005,40 +1035,111 @@ const Overview: React.FC = () => {
                     nameKey={viewMode === "name" ? "name" : "sector"}
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
-                    innerRadius={60}
+                    outerRadius={120}
+                    innerRadius={80}
                     paddingAngle={5}
-                    label={({ name, percent }) => {
+                    label={({
+                      name,
+                      percent,
+                      cx,
+                      cy,
+                      midAngle,
+                      innerRadius,
+                      outerRadius,
+                      index,
+                    }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius =
+                        innerRadius + (outerRadius - innerRadius) * 0.5;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
                       const displayName =
-                        name.length > 15 ? name.substring(0, 12) + "..." : name;
-                      return `${displayName} ${(percent * 100).toFixed(0)}%`;
+                        (name || "").length > 15
+                          ? (name || "").substring(0, 12) + "..."
+                          : name || "";
+                      const totalItems =
+                        viewMode === "name"
+                          ? portfolioData?.stocks?.length || 0
+                          : getSectorData()?.length || 0;
+                      const angleStep = 360 / totalItems;
+                      const labelRadius = outerRadius + 40;
+                      const labelX =
+                        cx + labelRadius * Math.cos(-midAngle * RADIAN);
+                      const labelY =
+                        cy + labelRadius * Math.sin(-midAngle * RADIAN);
+                      return (
+                        <g>
+                          <text
+                            x={x}
+                            y={y}
+                            fill={
+                              theme.palette.mode === "dark"
+                                ? "#E9D8FD"
+                                : "#6B46C1"
+                            }
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            style={{
+                              fontSize: "14px",
+                              fontWeight: 800,
+                              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.4))",
+                              letterSpacing: "0.5px",
+                              opacity: 1,
+                            }}
+                          >
+                            {(percent * 100).toFixed(0)}%
+                          </text>
+                          <text
+                            x={labelX}
+                            y={labelY}
+                            fill={
+                              theme.palette.mode === "dark"
+                                ? "#E9D8FD"
+                                : "#6B46C1"
+                            }
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            style={{
+                              fontSize: "14px",
+                              fontWeight: 800,
+                              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.4))",
+                              letterSpacing: "0.5px",
+                              opacity: 1,
+                            }}
+                          >
+                            {displayName}
+                          </text>
+                        </g>
+                      );
                     }}
                     labelLine={{
                       stroke:
                         theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                      strokeWidth: 1,
+                      strokeWidth: 2.5,
+                      opacity: 0.7,
                     }}
                     style={{
-                      fontSize: "12px",
-                      fontWeight: 600,
+                      fontSize: "14px",
+                      fontWeight: 800,
                       fill:
                         theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))",
+                      filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.4))",
+                      letterSpacing: "0.5px",
+                      opacity: 1,
                     }}
                     animationBegin={0}
                     animationDuration={1000}
                     animationEasing="ease-out"
                   >
-                    {(viewMode === "name"
-                      ? portfolioData.stocks
-                      : getSectorData()
-                    ).map((entry, index) => (
+                    {portfolioData.stocks.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={
-                          theme.palette.mode === "dark"
-                            ? `rgba(159, 122, 234, ${0.4 + index * 0.15})`
-                            : `rgba(107, 70, 193, ${0.4 + index * 0.15})`
+                          index % 3 === 0
+                            ? "rgba(183, 148, 244, 0.8)" // Pastel Purple
+                            : index % 3 === 1
+                            ? "rgba(129, 199, 132, 0.8)" // Pastel Green
+                            : "rgba(255, 167, 38, 0.8)" // Pastel Orange
                         }
                         stroke={
                           theme.palette.mode === "dark" ? "#1E1B4B" : "#FFFFFF"
@@ -1052,68 +1153,11 @@ const Overview: React.FC = () => {
                         onMouseEnter={(e) => {
                           if (e.currentTarget) {
                             e.currentTarget.style.filter = "brightness(1.2)";
-                            // Add tooltip for long names
-                            if (
-                              viewMode === "name" &&
-                              "name" in entry &&
-                              typeof entry.name === "string" &&
-                              entry.name.length > 15
-                            ) {
-                              const tooltip = document.createElement("div");
-                              tooltip.id = `tooltip-${index}`;
-                              tooltip.style.position = "absolute";
-                              tooltip.style.background =
-                                theme.palette.mode === "dark"
-                                  ? "rgba(49, 46, 129, 0.95)"
-                                  : "rgba(243, 232, 253, 0.95)";
-                              tooltip.style.color =
-                                theme.palette.mode === "dark"
-                                  ? "#E9D8FD"
-                                  : "#6B46C1";
-                              tooltip.style.padding = "8px 12px";
-                              tooltip.style.borderRadius = "8px";
-                              tooltip.style.fontSize = "0.875rem";
-                              tooltip.style.zIndex = "1000";
-                              tooltip.style.boxShadow =
-                                "0 4px 20px rgba(0, 0, 0, 0.15)";
-                              tooltip.style.backdropFilter = "blur(8px)";
-                              tooltip.textContent = entry.name;
-
-                              const rect =
-                                e.currentTarget.getBoundingClientRect();
-                              const labelRect = e.currentTarget
-                                .querySelector("text")
-                                ?.getBoundingClientRect();
-
-                              if (labelRect) {
-                                tooltip.style.left = `${
-                                  labelRect.left + labelRect.width / 2
-                                }px`;
-                                tooltip.style.top = `${labelRect.top - 30}px`;
-                                tooltip.style.transform = "translateX(-50%)";
-                              } else {
-                                // Fallback to original positioning if label rect is not found
-                                tooltip.style.left = `${
-                                  rect.left + rect.width / 2
-                                }px`;
-                                tooltip.style.top = `${rect.top - 40}px`;
-                                tooltip.style.transform = "translateX(-50%)";
-                              }
-
-                              document.body.appendChild(tooltip);
-                            }
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (e.currentTarget) {
                             e.currentTarget.style.filter = "brightness(1)";
-                            // Remove tooltip
-                            const tooltip = document.getElementById(
-                              `tooltip-${index}`
-                            );
-                            if (tooltip) {
-                              tooltip.remove();
-                            }
                           }
                         }}
                       />
@@ -1130,26 +1174,46 @@ const Overview: React.FC = () => {
                       color:
                         theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
                       boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
+                      backdropFilter: "blur(8px)",
+                      padding: "12px 16px",
+                      fontSize: "0.875rem",
+                      fontWeight: 800,
+                    }}
+                    labelStyle={{
+                      color:
+                        theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
+                      fontWeight: 700,
+                      fontSize: "0.875rem",
+                      letterSpacing: "0.5px",
+                      opacity: 1,
+                    }}
+                    itemStyle={{
+                      color:
+                        theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
+                      fontSize: "0.875rem",
+                      letterSpacing: "0.5px",
+                      fontWeight: 600,
+                      opacity: 1,
                     }}
                     formatter={(value: number, name: string) => [
                       `$${value.toLocaleString()}`,
-                      name.length > 20 ? name.substring(0, 17) + "..." : name,
+                      name,
                     ]}
-                    animationDuration={200}
                   />
-                  {/* Center Text with Animation */}
                   <text
                     x="50%"
                     y="50%"
                     textAnchor="middle"
                     dominantBaseline="middle"
                     style={{
-                      fontSize: "24px",
-                      fontWeight: "bold",
+                      fontSize: "32px",
+                      fontWeight: 800,
                       fill: getTotalGainLossColor(),
                       transition: "all 0.3s ease",
                       opacity: 0.9,
-                      filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
+                      filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.4))",
+                      letterSpacing: "0.5px",
+                      textShadow: "0 1px 1px rgba(0,0,0,0.3)",
                     }}
                   >
                     {getTotalGainLoss() >= 0 ? "+" : ""}
@@ -1174,13 +1238,14 @@ const Overview: React.FC = () => {
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
             }}
           >
             <CardContent>
               <Typography
                 variant="h6"
+                gutterBottom
                 sx={{
                   mb: { xs: 1, sm: 2 },
                   background:
@@ -1189,7 +1254,19 @@ const Overview: React.FC = () => {
                       : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
-                  fontWeight: 600,
+                  fontWeight: 700,
+                  fontSize: "1.5rem",
+                  position: "relative",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: "-8px",
+                    left: 0,
+                    width: "60px",
+                    height: "4px",
+                    background: "linear-gradient(90deg, #FF9800, #FFB74D)",
+                    borderRadius: "2px",
+                  },
                 }}
               >
                 Monthly P&L Performance
@@ -1198,12 +1275,7 @@ const Overview: React.FC = () => {
                 <ResponsiveContainer>
                   <BarChart
                     data={portfolioData.monthlyPnL}
-                    margin={{
-                      top: 40,
-                      right: 20,
-                      left: 10,
-                      bottom: 10,
-                    }}
+                    margin={{ top: 40, right: 20, left: 10, bottom: 10 }}
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
@@ -1219,7 +1291,9 @@ const Overview: React.FC = () => {
                       tick={{
                         fill:
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                        fontSize: "15px",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        letterSpacing: "0.5px",
                       }}
                       interval={0}
                       angle={-45}
@@ -1230,8 +1304,12 @@ const Overview: React.FC = () => {
                       tick={{
                         fill:
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                        fontSize: "16px",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        letterSpacing: "0.5px",
                       }}
+                      padding={{ top: 20, bottom: 20 }}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`}
                     />
                     <Tooltip
                       contentStyle={{
@@ -1245,8 +1323,7 @@ const Overview: React.FC = () => {
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
                         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
                         backdropFilter: "blur(8px)",
-                        padding: "8px 12px",
-                        transition: "all 0.3s ease",
+                        padding: "12px 16px",
                         fontSize: "0.875rem",
                         fontWeight: 500,
                       }}
@@ -1255,17 +1332,23 @@ const Overview: React.FC = () => {
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
                         fontWeight: 600,
                         fontSize: "0.875rem",
+                        letterSpacing: "0.5px",
                       }}
                       itemStyle={{
                         color:
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
                         fontSize: "0.875rem",
+                        letterSpacing: "0.5px",
                       }}
+                      formatter={(value: number, name: string) => [
+                        `${value.toLocaleString()} USD`,
+                        name,
+                      ]}
                     />
                     <Bar
                       dataKey="profit"
                       fill="url(#colorGradient)"
-                      radius={[4, 4, 0, 0]}
+                      radius={[6, 6, 0, 0]}
                     >
                       {portfolioData.monthlyPnL.map((entry, index) => (
                         <Cell
@@ -1273,12 +1356,28 @@ const Overview: React.FC = () => {
                           fill={
                             entry.profit >= 0
                               ? theme.palette.mode === "dark"
-                                ? "#4CAF50"
-                                : "#4CAF50"
+                                ? "rgba(76, 175, 80, 0.8)"
+                                : "rgba(76, 175, 80, 0.8)"
                               : theme.palette.mode === "dark"
-                              ? "#FF4842"
-                              : "#FF4842"
+                              ? "rgba(255, 72, 66, 0.8)"
+                              : "rgba(255, 72, 66, 0.8)"
                           }
+                          style={{
+                            transition: "all 0.3s ease",
+                            cursor: "pointer",
+                            filter: "brightness(1)",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (e.currentTarget) {
+                              e.currentTarget.style.filter =
+                                "brightness(1.2) saturate(1.5) hue-rotate(240deg)";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (e.currentTarget) {
+                              e.currentTarget.style.filter = "brightness(1)";
+                            }
+                          }}
                         />
                       ))}
                     </Bar>
@@ -1299,12 +1398,12 @@ const Overview: React.FC = () => {
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.8) 0%, rgba(30, 27, 75, 0.8) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.8) 0%, rgba(233, 216, 253, 0.8) 100%)",
+                  : "rgba(255, 255, 255, 0.85)",
               backdropFilter: "blur(10px)",
               border: `1px solid ${
                 theme.palette.mode === "dark"
                   ? "rgba(233, 216, 253, 0.2)"
-                  : "rgba(107, 70, 193, 0.2)"
+                  : "rgba(0, 0, 0, 0.1)"
               }`,
               boxShadow:
                 theme.palette.mode === "dark"
@@ -1330,7 +1429,19 @@ const Overview: React.FC = () => {
                         : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
-                    fontWeight: 600,
+                    fontWeight: 700,
+                    fontSize: "1.5rem",
+                    position: "relative",
+                    "&::after": {
+                      content: '""',
+                      position: "absolute",
+                      bottom: "-8px",
+                      left: 0,
+                      width: "60px",
+                      height: "4px",
+                      background: "linear-gradient(90deg, #FF9800, #FFB74D)",
+                      borderRadius: "2px",
+                    },
                   }}
                 >
                   Portfolio Risk Assessment
@@ -1347,12 +1458,7 @@ const Overview: React.FC = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={portfolioData.monthlyRisk}
-                    margin={{
-                      top: 40,
-                      right: 80,
-                      left: 0,
-                      bottom: 20,
-                    }}
+                    margin={{ top: 40, right: 80, left: 0, bottom: 20 }}
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
@@ -1363,12 +1469,13 @@ const Overview: React.FC = () => {
                       }
                     />
                     <XAxis
-                      dataKey="date"
+                      dataKey="month"
                       tickFormatter={(value) => value.split("/")[0]}
                       tick={{
                         fill:
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                        fontSize: "16px",
+                        fontSize: "14px",
+                        fontWeight: 500,
                       }}
                       interval={0}
                       angle={-45}
@@ -1380,7 +1487,8 @@ const Overview: React.FC = () => {
                       tick={{
                         fill:
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                        fontSize: "16px",
+                        fontSize: "14px",
+                        fontWeight: 500,
                       }}
                     />
                     <Tooltip
@@ -1395,8 +1503,7 @@ const Overview: React.FC = () => {
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
                         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
                         backdropFilter: "blur(8px)",
-                        padding: "8px 12px",
-                        transition: "all 0.3s ease",
+                        padding: "12px 16px",
                         fontSize: "0.875rem",
                         fontWeight: 500,
                       }}
@@ -1411,14 +1518,28 @@ const Overview: React.FC = () => {
                           theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
                         fontSize: "0.875rem",
                       }}
+                      formatter={(value: number, name: string) => [
+                        `${value.toFixed(1)}`,
+                        name,
+                      ]}
                     />
                     <Line
                       type="monotone"
                       dataKey="risk"
                       stroke="#FF4842"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
+                      strokeWidth={2.5}
+                      dot={{
+                        r: 4,
+                        fill: "#FF4842",
+                        stroke: "#FFFFFF",
+                        strokeWidth: 2,
+                      }}
+                      activeDot={{
+                        r: 6,
+                        fill: "#FF4842",
+                        stroke: "#FFFFFF",
+                        strokeWidth: 2,
+                      }}
                     />
                     <ReferenceLine
                       y={7}
@@ -1465,7 +1586,7 @@ const Overview: React.FC = () => {
               background:
                 theme.palette.mode === "dark"
                   ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  : "rgba(255, 255, 255, 0.85)",
               backdropFilter: "blur(10px)",
             }}
           >
@@ -1475,14 +1596,25 @@ const Overview: React.FC = () => {
                 gutterBottom
                 sx={{
                   mb: { xs: 1, sm: 3 },
-                  fontWeight: 600,
-                  fontSize: "1.25rem",
+                  fontWeight: 700,
+                  fontSize: "1.5rem",
                   background:
                     theme.palette.mode === "dark"
                       ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
                       : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
+                  position: "relative",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: "-8px",
+                    left: 0,
+                    width: "60px",
+                    height: "4px",
+                    background: "linear-gradient(90deg, #FF9800, #FFB74D)",
+                    borderRadius: "2px",
+                  },
                 }}
               >
                 Portfolio Summary
@@ -1490,338 +1622,453 @@ const Overview: React.FC = () => {
               <Grid container spacing={{ xs: 1, sm: 3 }}>
                 {/* Top Performers */}
                 <Grid item xs={12} md={6}>
-                  <Box
+                  <Card
                     sx={{
-                      p: { xs: 1, sm: 3 },
-                      borderRadius: "16px",
+                      height: "100%",
+                      borderRadius: "20px",
                       background:
                         theme.palette.mode === "dark"
-                          ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
-                          : "linear-gradient(135deg, rgba(243, 232, 253, 0.5) 0%, rgba(233, 216, 253, 0.5) 100%)",
+                          ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
+                          : "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(249, 250, 251, 0.75) 100%)",
                       backdropFilter: "blur(10px)",
-                      border: `1px solid ${
+                      boxShadow:
                         theme.palette.mode === "dark"
-                          ? "rgba(233, 216, 253, 0.1)"
-                          : "rgba(107, 70, 193, 0.1)"
-                      }`,
+                          ? "0 4px 20px rgba(0, 0, 0, 0.2)"
+                          : "0 4px 20px rgba(0, 0, 0, 0.1)",
                     }}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color: theme.palette.success.main,
-                        fontWeight: 600,
-                        mb: { xs: 1, sm: 2 },
-                      }}
-                    >
-                      Top Performers
-                    </Typography>
-                    {portfolioData.stocks
-                      .sort((a, b) => b.gainLoss - a.gainLoss)
-                      .slice(0, 3)
-                      .map((stock, index) => (
-                        <Box
-                          key={stock.symbol}
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mb: { xs: 0.5, sm: 2 },
-                            p: 1,
-                            borderRadius: "8px",
-                            background:
-                              theme.palette.mode === "dark"
-                                ? "rgba(233, 216, 253, 0.05)"
-                                : "rgba(107, 70, 193, 0.05)",
-                          }}
-                        >
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color:
+                    <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: { xs: 2, sm: 3 },
+                          background:
+                            theme.palette.mode === "dark"
+                              ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
+                              : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Top Performers
+                      </Typography>
+                      {portfolioData.stocks
+                        .sort((a, b) => b.gainLoss - a.gainLoss)
+                        .slice(0, 3)
+                        .map((stock, index) => (
+                          <Box
+                            key={stock.symbol}
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              mb: { xs: 1.5, sm: 2 },
+                              p: { xs: 1.5, sm: 2 },
+                              borderRadius: "12px",
+                              background:
+                                theme.palette.mode === "dark"
+                                  ? "rgba(233, 216, 253, 0.1)"
+                                  : "rgba(107, 70, 193, 0.05)",
+                              transition: "all 0.3s ease",
+                              "&:hover": {
+                                transform: "translateX(4px)",
+                                background:
                                   theme.palette.mode === "dark"
-                                    ? "#E9D8FD"
-                                    : "#6B46C1",
-                                fontWeight: 600,
-                                mr: 2,
+                                    ? "rgba(233, 216, 253, 0.15)"
+                                    : "rgba(107, 70, 193, 0.1)",
+                              },
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
                               }}
                             >
-                              {index + 1}.
-                            </Typography>
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  color:
+                                    theme.palette.mode === "dark"
+                                      ? "#E9D8FD"
+                                      : "#6B46C1",
+                                  fontWeight: 700,
+                                  minWidth: "24px",
+                                }}
+                              >
+                                {index + 1}
+                              </Typography>
+                              <Box>
+                                <Typography
+                                  variant="subtitle1"
+                                  sx={{
+                                    color:
+                                      theme.palette.mode === "dark"
+                                        ? "#E9D8FD"
+                                        : "#6B46C1",
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {stock.symbol}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color:
+                                      theme.palette.mode === "dark"
+                                        ? "#E9D8FD"
+                                        : "#6B46C1",
+                                    opacity: 0.8,
+                                  }}
+                                >
+                                  {stock.name}
+                                </Typography>
+                              </Box>
+                            </Box>
                             <Typography
-                              variant="body1"
+                              variant="h6"
                               sx={{
-                                color:
-                                  theme.palette.mode === "dark"
-                                    ? "#E9D8FD"
-                                    : "#6B46C1",
-                                fontWeight: 500,
+                                color: theme.palette.success.main,
+                                fontWeight: 700,
+                                textShadow: "0 2px 4px rgba(0,0,0,0.1)",
                               }}
                             >
-                              {stock.symbol}
+                              +{stock.gainLoss.toFixed(1)}%
                             </Typography>
                           </Box>
+                        ))}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Sector Distribution */}
+                <Grid item xs={12} md={6}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      borderRadius: "20px",
+                      background:
+                        theme.palette.mode === "dark"
+                          ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
+                          : "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(249, 250, 251, 0.75) 100%)",
+                      backdropFilter: "blur(10px)",
+                      boxShadow:
+                        theme.palette.mode === "dark"
+                          ? "0 4px 20px rgba(0, 0, 0, 0.2)"
+                          : "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: { xs: 2, sm: 3 },
+                          background:
+                            theme.palette.mode === "dark"
+                              ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
+                              : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Sector Distribution
+                      </Typography>
+                      {getSectorData()
+                        .sort((a, b) => b.value - a.value)
+                        .map((sector, index) => (
+                          <Box
+                            key={sector.sector}
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              mb: { xs: 1.5, sm: 2 },
+                              p: { xs: 1.5, sm: 2 },
+                              borderRadius: "12px",
+                              background:
+                                theme.palette.mode === "dark"
+                                  ? "rgba(233, 216, 253, 0.1)"
+                                  : "rgba(107, 70, 193, 0.05)",
+                              transition: "all 0.3s ease",
+                              "&:hover": {
+                                transform: "translateX(4px)",
+                                background:
+                                  theme.palette.mode === "dark"
+                                    ? "rgba(233, 216, 253, 0.15)"
+                                    : "rgba(107, 70, 193, 0.1)",
+                              },
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                              }}
+                            >
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  color:
+                                    theme.palette.mode === "dark"
+                                      ? "#E9D8FD"
+                                      : "#6B46C1",
+                                  fontWeight: 700,
+                                  minWidth: "24px",
+                                }}
+                              >
+                                {index + 1}
+                              </Typography>
+                              <Typography
+                                variant="subtitle1"
+                                sx={{
+                                  color:
+                                    theme.palette.mode === "dark"
+                                      ? "#E9D8FD"
+                                      : "#6B46C1",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {sector.sector}
+                              </Typography>
+                            </Box>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                color:
+                                  theme.palette.mode === "dark"
+                                    ? "#E9D8FD"
+                                    : "#6B46C1",
+                                fontWeight: 700,
+                                textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                              }}
+                            >
+                              ${(sector.value / 1000).toFixed(1)}K
+                            </Typography>
+                          </Box>
+                        ))}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Risk Metrics */}
+                <Grid item xs={12} md={6}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      borderRadius: "20px",
+                      background:
+                        theme.palette.mode === "dark"
+                          ? "rgba(233, 216, 253, 0.1)"
+                          : "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(249, 250, 251, 0.75) 100%)",
+                      backdropFilter: "blur(10px)",
+                      boxShadow:
+                        theme.palette.mode === "dark"
+                          ? "0 4px 20px rgba(0, 0, 0, 0.2)"
+                          : "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: { xs: 2, sm: 3 },
+                          background:
+                            theme.palette.mode === "dark"
+                              ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
+                              : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Risk Metrics
+                      </Typography>
+                      <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            color:
+                              theme.palette.mode === "dark"
+                                ? "#E9D8FD"
+                                : "#6B46C1",
+                            mb: 1,
+                            fontWeight: 500,
+                          }}
+                        >
+                          Current Risk Score
+                        </Typography>
+                        <Typography
+                          variant="h3"
+                          sx={{
+                            color: theme.palette.warning.main,
+                            fontWeight: 700,
+                            textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                          }}
+                        >
+                          {portfolioData.monthlyRisk[
+                            portfolioData.monthlyRisk.length - 1
+                          ].risk.toFixed(1)}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            color:
+                              theme.palette.mode === "dark"
+                                ? "#E9D8FD"
+                                : "#6B46C1",
+                            mb: 1,
+                            fontWeight: 500,
+                          }}
+                        >
+                          Risk Trend
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
                           <Typography
-                            variant="body1"
+                            variant="h6"
                             sx={{
                               color: theme.palette.success.main,
                               fontWeight: 600,
                             }}
                           >
-                            +{stock.gainLoss.toFixed(1)}%
+                            Decreasing
                           </Typography>
-                        </Box>
-                      ))}
-                  </Box>
-                </Grid>
-
-                {/* Sector Distribution */}
-                <Grid item xs={12} md={6}>
-                  <Box
-                    sx={{
-                      p: { xs: 1, sm: 3 },
-                      borderRadius: "16px",
-                      background:
-                        theme.palette.mode === "dark"
-                          ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
-                          : "linear-gradient(135deg, rgba(243, 232, 253, 0.5) 0%, rgba(233, 216, 253, 0.5) 100%)",
-                      backdropFilter: "blur(10px)",
-                      border: `1px solid ${
-                        theme.palette.mode === "dark"
-                          ? "rgba(233, 216, 253, 0.1)"
-                          : "rgba(107, 70, 193, 0.1)"
-                      }`,
-                    }}
-                  >
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color:
-                          theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                        fontWeight: 600,
-                        mb: { xs: 1, sm: 2 },
-                      }}
-                    >
-                      Sector Distribution
-                    </Typography>
-                    {getSectorData()
-                      .sort((a, b) => b.value - a.value)
-                      .map((sector, index) => (
-                        <Box
-                          key={sector.sector}
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mb: { xs: 0.5, sm: 2 },
-                            p: 1,
-                            borderRadius: "8px",
-                            background:
-                              theme.palette.mode === "dark"
-                                ? "rgba(233, 216, 253, 0.05)"
-                                : "rgba(107, 70, 193, 0.05)",
-                          }}
-                        >
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color:
-                                  theme.palette.mode === "dark"
-                                    ? "#E9D8FD"
-                                    : "#6B46C1",
-                                fontWeight: 600,
-                                mr: 2,
-                              }}
-                            >
-                              {index + 1}.
-                            </Typography>
-                            <Typography
-                              variant="body1"
-                              sx={{
-                                color:
-                                  theme.palette.mode === "dark"
-                                    ? "#E9D8FD"
-                                    : "#6B46C1",
-                                fontWeight: 500,
-                              }}
-                            >
-                              {sector.sector}
-                            </Typography>
-                          </Box>
                           <Typography
-                            variant="body1"
+                            variant="body2"
                             sx={{
                               color:
                                 theme.palette.mode === "dark"
                                   ? "#E9D8FD"
                                   : "#6B46C1",
-                              fontWeight: 600,
+                              opacity: 0.8,
                             }}
                           >
-                            ${(sector.value / 1000).toFixed(1)}K
+                            (Last 3 months)
                           </Typography>
                         </Box>
-                      ))}
-                  </Box>
-                </Grid>
-
-                {/* Risk Metrics */}
-                <Grid item xs={12} md={6}>
-                  <Box
-                    sx={{
-                      p: { xs: 1, sm: 3 },
-                      borderRadius: "16px",
-                      background:
-                        theme.palette.mode === "dark"
-                          ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
-                          : "linear-gradient(135deg, rgba(243, 232, 253, 0.5) 0%, rgba(233, 216, 253, 0.5) 100%)",
-                      backdropFilter: "blur(10px)",
-                      border: `1px solid ${
-                        theme.palette.mode === "dark"
-                          ? "rgba(233, 216, 253, 0.1)"
-                          : "rgba(107, 70, 193, 0.1)"
-                      }`,
-                    }}
-                  >
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color: theme.palette.warning.main,
-                        fontWeight: 600,
-                        mb: { xs: 1, sm: 2 },
-                      }}
-                    >
-                      Risk Metrics
-                    </Typography>
-                    <Box sx={{ mb: { xs: 1, sm: 2 } }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color:
-                            theme.palette.mode === "dark"
-                              ? "#E9D8FD"
-                              : "#6B46C1",
-                          mb: 1,
-                        }}
-                      >
-                        Current Risk Score
-                      </Typography>
-                      <Typography
-                        variant="h4"
-                        sx={{
-                          color: theme.palette.warning.main,
-                          fontWeight: 600,
-                        }}
-                      >
-                        {portfolioData.monthlyRisk[
-                          portfolioData.monthlyRisk.length - 1
-                        ].risk.toFixed(1)}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color:
-                            theme.palette.mode === "dark"
-                              ? "#E9D8FD"
-                              : "#6B46C1",
-                          mb: 1,
-                        }}
-                      >
-                        Risk Trend
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: theme.palette.success.main,
-                          fontWeight: 500,
-                        }}
-                      >
-                        Decreasing (Last 3 months)
-                      </Typography>
-                    </Box>
-                  </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
 
                 {/* Performance Metrics */}
                 <Grid item xs={12} md={6}>
-                  <Box
+                  <Card
                     sx={{
-                      p: { xs: 1, sm: 3 },
-                      borderRadius: "16px",
+                      height: "100%",
+                      borderRadius: "20px",
                       background:
                         theme.palette.mode === "dark"
-                          ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
-                          : "linear-gradient(135deg, rgba(243, 232, 253, 0.5) 0%, rgba(233, 216, 253, 0.5) 100%)",
-                      backdropFilter: "blur(10px)",
-                      border: `1px solid ${
-                        theme.palette.mode === "dark"
                           ? "rgba(233, 216, 253, 0.1)"
-                          : "rgba(107, 70, 193, 0.1)"
-                      }`,
+                          : "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(249, 250, 251, 0.75) 100%)",
+                      backdropFilter: "blur(10px)",
+                      boxShadow:
+                        theme.palette.mode === "dark"
+                          ? "0 4px 20px rgba(0, 0, 0, 0.2)"
+                          : "0 4px 20px rgba(0, 0, 0, 0.1)",
                     }}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color:
-                          theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-                        fontWeight: 600,
-                        mb: { xs: 1, sm: 2 },
-                      }}
-                    >
-                      Performance Metrics
-                    </Typography>
-                    <Box sx={{ mb: { xs: 1, sm: 2 } }}>
+                    <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                       <Typography
-                        variant="body2"
+                        variant="h6"
                         sx={{
-                          color:
+                          mb: { xs: 2, sm: 3 },
+                          background:
                             theme.palette.mode === "dark"
-                              ? "#E9D8FD"
-                              : "#6B46C1",
-                          mb: 1,
-                        }}
-                      >
-                        YTD Return
-                      </Typography>
-                      <Typography
-                        variant="h4"
-                        sx={{
-                          color: theme.palette.success.main,
+                              ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
+                              : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
                           fontWeight: 600,
                         }}
                       >
-                        +16.25%
+                        Performance Metrics
                       </Typography>
-                    </Box>
-                    <Box>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color:
-                            theme.palette.mode === "dark"
-                              ? "#E9D8FD"
-                              : "#6B46C1",
-                          mb: 1,
-                        }}
-                      >
-                        vs VN-Index
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: theme.palette.success.main,
-                          fontWeight: 500,
-                        }}
-                      >
-                        +5.2% (Outperforming)
-                      </Typography>
-                    </Box>
-                  </Box>
+                      <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            color:
+                              theme.palette.mode === "dark"
+                                ? "#E9D8FD"
+                                : "#6B46C1",
+                            mb: 1,
+                            fontWeight: 500,
+                          }}
+                        >
+                          YTD Return
+                        </Typography>
+                        <Typography
+                          variant="h3"
+                          sx={{
+                            background:
+                              "linear-gradient(135deg, #2e7d32 0%, #81C784 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            fontWeight: 700,
+                            textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                          }}
+                        >
+                          +16.25%
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            color:
+                              theme.palette.mode === "dark"
+                                ? "#E9D8FD"
+                                : "#6B46C1",
+                            mb: 1,
+                            fontWeight: 500,
+                          }}
+                        >
+                          Monthly Performance
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              color: theme.palette.success.main,
+                              fontWeight: 600,
+                            }}
+                          >
+                            +2.5%
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color:
+                                theme.palette.mode === "dark"
+                                  ? "#E9D8FD"
+                                  : "#6B46C1",
+                              opacity: 0.8,
+                            }}
+                          >
+                            vs last month
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
               </Grid>
             </CardContent>

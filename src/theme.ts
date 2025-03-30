@@ -13,7 +13,7 @@ export const lightTheme = createTheme({
     },
     background: {
       default: "#f5f8fa",
-      paper: "rgba(255, 255, 255, 0.8)",
+      paper: "rgba(255, 255, 255, 0.7)",
     },
     text: {
       primary: "#1a1f2c",
@@ -25,7 +25,7 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           backdropFilter: "blur(10px)",
-          backgroundColor: "rgba(255, 255, 255, 0.8)",
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
         },
       },
     },
@@ -33,7 +33,7 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           backdropFilter: "blur(10px)",
-          backgroundColor: "rgba(255, 255, 255, 0.8)",
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
         },
       },
     },

@@ -19,8 +19,36 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import StockMiniChart from "../components/StockMiniChart";
 
+interface Stock {
+  symbol: string;
+  name: string;
+  sector: keyof typeof sectorColors;
+  currentPrice: number;
+  change: number;
+  changePercent: number;
+  shares: number;
+  value: number;
+  costBasis: number;
+  gain: number;
+  gainPercent: number;
+  chartData: Array<{
+    date: string;
+    price: number;
+  }>;
+}
+
+interface StockData {
+  summary: {
+    totalValue: number;
+    totalGain: number;
+    gainPercentage: number;
+    numberOfStocks: number;
+  };
+  stocks: Stock[];
+}
+
 // Sample data - replace with real API data
-const stockData = {
+const stockData: StockData = {
   summary: {
     totalValue: 446200,
     totalGain: 35000,
@@ -31,6 +59,7 @@ const stockData = {
     {
       symbol: "HPG",
       name: "Hoa Phat Group",
+      sector: "Steel",
       currentPrice: 28.5,
       change: 0.75,
       changePercent: 2.7,
@@ -48,6 +77,7 @@ const stockData = {
     {
       symbol: "VRE",
       name: "Vincom Retail",
+      sector: "Retail",
       currentPrice: 32.8,
       change: -0.4,
       changePercent: -1.2,
@@ -65,6 +95,7 @@ const stockData = {
     {
       symbol: "VCG",
       name: "Vietnam Construction",
+      sector: "Construction",
       currentPrice: 15.2,
       change: 0.3,
       changePercent: 2.0,
@@ -82,6 +113,7 @@ const stockData = {
     {
       symbol: "FPT",
       name: "FPT Corporation",
+      sector: "Technology",
       currentPrice: 85.5,
       change: 1.5,
       changePercent: 1.8,
@@ -99,6 +131,7 @@ const stockData = {
     {
       symbol: "TCB",
       name: "Techcombank",
+      sector: "Banking",
       currentPrice: 42.8,
       change: 0.8,
       changePercent: 1.9,
@@ -116,6 +149,15 @@ const stockData = {
   ],
 };
 
+// Add sector color mapping
+const sectorColors = {
+  Steel: "#F6AD55", // Orange
+  Retail: "#9F7AEA", // Purple
+  Construction: "#48BB78", // Green
+  Technology: "#4299E1", // Blue
+  Banking: "#ED64A6", // Pink
+} as const;
+
 const MyStocks: React.FC = () => {
   const theme = useTheme();
 
@@ -126,21 +168,50 @@ const MyStocks: React.FC = () => {
         <Grid item xs={12} md={3}>
           <Card
             sx={{
+              height: "100%",
               background:
                 theme.palette.mode === "dark"
-                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
-              color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-              transition: "transform 0.2s ease-in-out",
-              "&:hover": { transform: "translateY(-4px)" },
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(159, 122, 234, 0.15)"
+              }`,
+              transition: "all 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(135deg, rgba(159, 122, 234, 0.2) 0%, rgba(183, 148, 244, 0.2) 100%)"
+                    : "linear-gradient(135deg, rgba(159, 122, 234, 0.15) 0%, rgba(183, 148, 244, 0.15) 100%)",
+              },
             }}
           >
-            <CardContent>
-              <Typography variant="subtitle2" sx={{ opacity: 0.8, mb: 1 }}>
+            <CardContent
+              sx={{ height: "100%", display: "flex", flexDirection: "column" }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  opacity: 0.8,
+                  mb: 1,
+                  color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
+                }}
+              >
                 Total Portfolio Value
               </Typography>
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: "2.2rem",
+                  letterSpacing: "1px",
+                  color: "#9F7AEA",
+                  marginTop: "4px",
+                }}
+              >
                 ${stockData.summary.totalValue.toLocaleString()}
               </Typography>
             </CardContent>
@@ -149,27 +220,60 @@ const MyStocks: React.FC = () => {
         <Grid item xs={12} md={3}>
           <Card
             sx={{
+              height: "100%",
               background:
                 theme.palette.mode === "dark"
-                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
-              color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-              transition: "transform 0.2s ease-in-out",
-              "&:hover": { transform: "translateY(-4px)" },
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(72, 187, 120, 0.15)"
+              }`,
+              transition: "all 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(135deg, rgba(72, 187, 120, 0.2) 0%, rgba(154, 230, 180, 0.2) 100%)"
+                    : "linear-gradient(135deg, rgba(72, 187, 120, 0.15) 0%, rgba(154, 230, 180, 0.15) 100%)",
+              },
             }}
           >
-            <CardContent>
-              <Typography variant="subtitle2" sx={{ opacity: 0.8, mb: 1 }}>
+            <CardContent
+              sx={{ height: "100%", display: "flex", flexDirection: "column" }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  opacity: 0.8,
+                  mb: 1,
+                  color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
+                }}
+              >
                 Total Gain/Loss
               </Typography>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
                 {stockData.summary.totalGain >= 0 ? (
-                  <TrendingUpIcon sx={{ mr: 1, fontSize: 24 }} />
+                  <TrendingUpIcon
+                    sx={{ mr: 1, fontSize: 24, color: "#48BB78" }}
+                  />
                 ) : (
-                  <TrendingDownIcon sx={{ mr: 1, fontSize: 24 }} />
+                  <TrendingDownIcon
+                    sx={{ mr: 1, fontSize: 24, color: "#48BB78" }}
+                  />
                 )}
-                <Typography variant="h4" sx={{ fontWeight: 600 }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: "2.2rem",
+                    letterSpacing: "1px",
+                    color: "#48BB78",
+                    marginTop: "4px",
+                  }}
+                >
                   ${Math.abs(stockData.summary.totalGain).toLocaleString()}
                 </Typography>
               </Box>
@@ -179,21 +283,50 @@ const MyStocks: React.FC = () => {
         <Grid item xs={12} md={3}>
           <Card
             sx={{
+              height: "100%",
               background:
                 theme.palette.mode === "dark"
-                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
-              color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-              transition: "transform 0.2s ease-in-out",
-              "&:hover": { transform: "translateY(-4px)" },
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(246, 173, 85, 0.15)"
+              }`,
+              transition: "all 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(135deg, rgba(246, 173, 85, 0.2) 0%, rgba(251, 211, 141, 0.2) 100%)"
+                    : "linear-gradient(135deg, rgba(72, 187, 120, 0.15) 0%, rgba(154, 230, 180, 0.15) 100%)",
+              },
             }}
           >
-            <CardContent>
-              <Typography variant="subtitle2" sx={{ opacity: 0.8, mb: 1 }}>
+            <CardContent
+              sx={{ height: "100%", display: "flex", flexDirection: "column" }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  opacity: 0.8,
+                  mb: 1,
+                  color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
+                }}
+              >
                 Gain Percentage
               </Typography>
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: "2.2rem",
+                  letterSpacing: "1px",
+                  color: "#48BB78",
+                  marginTop: "4px",
+                }}
+              >
                 {stockData.summary.gainPercentage}%
               </Typography>
             </CardContent>
@@ -202,21 +335,50 @@ const MyStocks: React.FC = () => {
         <Grid item xs={12} md={3}>
           <Card
             sx={{
+              height: "100%",
               background:
                 theme.palette.mode === "dark"
-                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-                  : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(255, 255, 255, 0.7)",
               backdropFilter: "blur(10px)",
-              color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
-              transition: "transform 0.2s ease-in-out",
-              "&:hover": { transform: "translateY(-4px)" },
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(135deg, rgba(49, 46, 129, 0.5) 0%, rgba(30, 27, 75, 0.5) 100%)"
+                  : "rgba(246, 173, 85, 0.15)"
+              }`,
+              transition: "all 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(135deg, rgba(246, 173, 85, 0.2) 0%, rgba(251, 211, 141, 0.2) 100%)"
+                    : "linear-gradient(135deg, rgba(246, 173, 85, 0.15) 0%, rgba(251, 211, 141, 0.15) 100%)",
+              },
             }}
           >
-            <CardContent>
-              <Typography variant="subtitle2" sx={{ opacity: 0.8, mb: 1 }}>
+            <CardContent
+              sx={{ height: "100%", display: "flex", flexDirection: "column" }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  opacity: 0.8,
+                  mb: 1,
+                  color: theme.palette.mode === "dark" ? "#E9D8FD" : "#6B46C1",
+                }}
+              >
                 Number of Stocks
               </Typography>
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: "2.2rem",
+                  letterSpacing: "1px",
+                  color: "#F6AD55",
+                  marginTop: "4px",
+                }}
+              >
                 {stockData.summary.numberOfStocks}
               </Typography>
             </CardContent>
@@ -235,7 +397,7 @@ const MyStocks: React.FC = () => {
           background:
             theme.palette.mode === "dark"
               ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
-              : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+              : "rgba(255, 255, 255, 0.7)",
           backdropFilter: "blur(10px)",
         }}
       >
@@ -244,15 +406,28 @@ const MyStocks: React.FC = () => {
             variant="h6"
             gutterBottom
             sx={{
-              fontWeight: 600,
-              fontSize: "1.25rem",
-              background:
-                theme.palette.mode === "dark"
-                  ? "linear-gradient(135deg, #9F7AEA 0%, #E9D8FD 100%)"
-                  : "linear-gradient(135deg, #6B46C1 0%, #9F7AEA 100%)",
+              fontWeight: 700,
+              fontSize: "1.5rem",
+              textAlign: "center",
+              mb: 4,
+              position: "relative",
+              display: "inline-block",
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                bottom: "-8px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "60px",
+                height: "4px",
+                background: "linear-gradient(90deg, #9F7AEA, #B794F4)",
+                borderRadius: "2px",
+              },
+              background: "linear-gradient(135deg, #9F7AEA 0%, #B794F4 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              mb: 3,
+              textShadow: "0 2px 4px rgba(159, 122, 234, 0.2)",
+              letterSpacing: "0.5px",
             }}
           >
             My Stocks
@@ -271,15 +446,33 @@ const MyStocks: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Symbol</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell align="right">Current Price</TableCell>
-                  <TableCell align="right">Change</TableCell>
-                  <TableCell align="right">Shares</TableCell>
-                  <TableCell align="right">Value</TableCell>
-                  <TableCell align="right">Cost Basis</TableCell>
-                  <TableCell align="right">Gain/Loss</TableCell>
-                  <TableCell>Chart</TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Symbol
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Name
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Current Price
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Change
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Shares
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Value
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Cost Basis
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Gain/Loss
+                  </TableCell>
+                  <TableCell align="left" sx={{ color: "#6B46C1" }}>
+                    Chart
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -298,18 +491,38 @@ const MyStocks: React.FC = () => {
                     }}
                   >
                     <TableCell>
-                      <Chip
-                        label={stock.symbol}
-                        size="small"
-                        sx={{
-                          backgroundColor: theme.palette.primary.main,
-                          color: "#FFFFFF",
-                          fontWeight: 600,
-                          "&:hover": {
-                            backgroundColor: theme.palette.primary.dark,
-                          },
-                        }}
-                      />
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Chip
+                          label={stock.symbol}
+                          size="small"
+                          sx={{
+                            backgroundColor: sectorColors[stock.sector],
+                            color: "#FFFFFF",
+                            fontWeight: 600,
+                            "&:hover": {
+                              backgroundColor: sectorColors[stock.sector],
+                              opacity: 0.9,
+                            },
+                          }}
+                        />
+                        <Chip
+                          label={stock.sector}
+                          size="small"
+                          sx={{
+                            backgroundColor: `${sectorColors[stock.sector]}20`,
+                            color: sectorColors[stock.sector],
+                            fontWeight: 500,
+                            border: `1px solid ${sectorColors[stock.sector]}40`,
+                            "&:hover": {
+                              backgroundColor: `${
+                                sectorColors[stock.sector]
+                              }30`,
+                            },
+                          }}
+                        />
+                      </Box>
                     </TableCell>
                     <TableCell>{stock.name}</TableCell>
                     <TableCell align="right">
@@ -367,11 +580,13 @@ const MyStocks: React.FC = () => {
                     <TableCell>
                       <StockMiniChart
                         data={stock.chartData}
-                        color={
-                          stock.change >= 0
-                            ? theme.palette.success.main
-                            : theme.palette.error.main
-                        }
+                        color={stock.change >= 0 ? "#48BB78" : "#F56565"}
+                        strokeWidth={2}
+                        dotSize={4}
+                        dotColor={stock.change >= 0 ? "#48BB78" : "#F56565"}
+                        dotStrokeWidth={2}
+                        dotStrokeColor="#FFFFFF"
+                        curve="monotoneX"
                       />
                     </TableCell>
                   </TableRow>

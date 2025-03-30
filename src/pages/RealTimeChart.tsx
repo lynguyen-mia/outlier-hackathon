@@ -43,13 +43,21 @@ const RealTimeChart: React.FC = () => {
     >
       <Card
         sx={{
-          mb: 3,
-          width: "100%",
+          borderRadius: "20px",
           background:
             theme.palette.mode === "dark"
-              ? "linear-gradient(135deg, rgba(45, 55, 72, 0.7) 0%, rgba(26, 32, 44, 0.7) 100%)"
-              : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+              ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
+              : "rgba(255, 255, 255, 0.7)",
           backdropFilter: "blur(10px)",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? "0 4px 20px rgba(0, 0, 0, 0.2)"
+              : "0 4px 20px rgba(0, 0, 0, 0.1)",
+          border: `1px solid ${
+            theme.palette.mode === "dark"
+              ? "rgba(233, 216, 253, 0.2)"
+              : "rgba(0, 0, 0, 0.1)"
+          }`,
         }}
       >
         <CardContent sx={{ width: "100%", p: { xs: 2, md: 3 } }}>
@@ -160,12 +168,21 @@ const RealTimeChart: React.FC = () => {
 
       <Card
         sx={{
-          width: "100%",
+          borderRadius: "20px",
           background:
             theme.palette.mode === "dark"
-              ? "linear-gradient(135deg, rgba(45, 55, 72, 0.7) 0%, rgba(26, 32, 44, 0.7) 100%)"
-              : "linear-gradient(135deg, rgba(243, 232, 253, 0.7) 0%, rgba(233, 216, 253, 0.7) 100%)",
+              ? "linear-gradient(135deg, rgba(49, 46, 129, 0.7) 0%, rgba(30, 27, 75, 0.7) 100%)"
+              : "rgba(255, 255, 255, 0.7)",
           backdropFilter: "blur(10px)",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? "0 4px 20px rgba(0, 0, 0, 0.2)"
+              : "0 4px 20px rgba(0, 0, 0, 0.1)",
+          border: `1px solid ${
+            theme.palette.mode === "dark"
+              ? "rgba(233, 216, 253, 0.2)"
+              : "rgba(0, 0, 0, 0.1)"
+          }`,
         }}
       >
         <CardContent sx={{ width: "100%", p: { xs: 2, md: 3 } }}>
