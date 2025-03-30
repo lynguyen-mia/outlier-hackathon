@@ -22,7 +22,7 @@ import StockMiniChart from "../components/StockMiniChart";
 // Sample data - replace with real API data
 const stockData = {
   summary: {
-    totalValue: 250000,
+    totalValue: 446200,
     totalGain: 35000,
     gainPercentage: 16.25,
     numberOfStocks: 5,
